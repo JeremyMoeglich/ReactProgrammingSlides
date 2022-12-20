@@ -1,0 +1,1 @@
+export const transition_duration = 0.3; // seconds
