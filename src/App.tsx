@@ -29,17 +29,27 @@ function FullScreenApp() {
 function App() {
 	const [slide_index, unchecked_setSlideIndex] = useState(0);
 	const setSlideIndex = (index: number) => {
+		console.log(index);
 		unchecked_setSlideIndex(Math.max(0, index));
 	};
+	const next_slide = () => {
+		setSlideIndex(slide_index + 1);
+	};
+	const prev_slide = () => {
+		setSlideIndex(slide_index - 1);
+	};
 	const slides = get_slides();
-	useListenKey('ArrowRight', () => setSlideIndex(slide_index + 1));
-	useListenKey('ArrowLeft', () => setSlideIndex(slide_index - 1));
-	useListenKey('ArrowUp', () => setSlideIndex(slide_index - 1));
-	useListenKey('ArrowDown', () => setSlideIndex(slide_index + 1));
+	useListenKey('ArrowRight', next_slide);
+	useListenKey('ArrowLeft', prev_slide);
+	useListenKey('ArrowUp', prev_slide);
+	useListenKey('ArrowDown', next_slide);
 
 	const slide = slides[slide_index];
 	return (
 		<div className="App">
+			<p>
+				{slide_index} / {slides.length}
+			</p>
 			<div className="slide w-full h-full">{slide.component(slide.props)}</div>
 		</div>
 	);
