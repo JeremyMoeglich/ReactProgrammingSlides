@@ -1,34 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import { useListenKey } from './lib/keypress';
+import { FullScreen, useFullScreenHandle } from 'react-full-screen';
+import { get_slides } from './lib/slide_data';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className='flex flex-col gap-2'>
-      <div className='flex justify-evenly'>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="w-24" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="w-24" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="flex flex-col gap-4 items-center">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
+function FullScreenApp() {
+	const handle = useFullScreenHandle();
+	let is_fullscreen = false;
+	useListenKey('f', () => {
+		if (is_fullscreen) {
+			handle.exit();
+		} else {
+			handle.enter();
+		}
+		is_fullscreen = !is_fullscreen;
+	});
+	useListenKey('Escape', () => {
+		handle.exit();
+		is_fullscreen = false;
+	});
+	return (
+		<FullScreen handle={handle}>
+			<App />
+		</FullScreen>
+	);
 }
 
-export default App
+function App() {
+	const [slide_index, unchecked_setSlideIndex] = useState(0);
+	const setSlideIndex = (index: number) => {
+		unchecked_setSlideIndex(Math.max(0, index));
+	};
+	const slides = get_slides();
+	useListenKey('ArrowRight', () => setSlideIndex(slide_index + 1));
+	useListenKey('ArrowLeft', () => setSlideIndex(slide_index - 1));
+	useListenKey('ArrowUp', () => setSlideIndex(slide_index - 1));
+	useListenKey('ArrowDown', () => setSlideIndex(slide_index + 1));
+
+	const slide = slides[slide_index];
+	return (
+		<div className="App">
+			<div className="slide w-full h-full">{slide.component(slide.props)}</div>
+		</div>
+	);
+}
+
+export default FullScreenApp;

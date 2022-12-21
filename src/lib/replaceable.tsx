@@ -1,4 +1,5 @@
 import { animated, useSprings } from '@react-spring/web';
+import { transition_duration } from '../vars';
 
 interface ReplaceableProps<Props> {
 	component: React.ComponentType<Props>;
@@ -30,9 +31,8 @@ export const Replaceable = <Props extends {}>(props: ReplaceableProps<Props>) =>
 				}, 0)`
 			},
 			config: {
-				duration: 500
-			},
-			key: props.key
+				duration: transition_duration * 1000
+			}
 		},
 		{
 			from: {
@@ -52,9 +52,8 @@ export const Replaceable = <Props extends {}>(props: ReplaceableProps<Props>) =>
 				transform: 'translate3d(0, 0, 0)'
 			},
 			config: {
-				duration: 500
-			},
-			key: props.key
+				duration: transition_duration * 1000
+			}
 		}
 	]);
 
