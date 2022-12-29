@@ -28,15 +28,21 @@ function FullScreenApp() {
 
 function App() {
 	const [slide_index, unchecked_setSlideIndex] = useState(0);
-	const setSlideIndex = (index: number) => {
-		console.log(index);
-		unchecked_setSlideIndex(Math.max(0, index));
+	const setSlideIndex = (index: number | ((index: number) => number)) => {
+		if (typeof index === 'number') {
+			unchecked_setSlideIndex(Math.max(0, Math.min(slides.length - 1, index)));
+		} else {
+			unchecked_setSlideIndex((prev_index) => {
+				const new_index = index(prev_index);
+				return Math.max(0, Math.min(slides.length - 1, new_index));
+			});
+		}
 	};
 	const next_slide = () => {
-		setSlideIndex(slide_index + 1);
+		setSlideIndex((prev_index) => prev_index + 1)
 	};
 	const prev_slide = () => {
-		setSlideIndex(slide_index - 1);
+		setSlideIndex((prev_index) => prev_index - 1)
 	};
 	const slides = get_slides();
 	useListenKey('ArrowRight', next_slide);
@@ -50,7 +56,7 @@ function App() {
 			<p>
 				{slide_index} / {slides.length}
 			</p>
-			<div className="slide w-full h-full">{slide.component(slide.props)}</div>
+			<div className="slide grow relative w-full">{slide.component(slide.props)}</div>
 		</div>
 	);
 }

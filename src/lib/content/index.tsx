@@ -68,6 +68,11 @@ export const stages: Stage[] = [
 								type: 'string',
 								start_address: 9,
 								value: 'Hello'
+							},
+							{
+								type: 'null',
+								start_address: 15,
+								end_address: 20
 							}
 						]
 					}
