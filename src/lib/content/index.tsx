@@ -1,4 +1,5 @@
-import { MemoryModel, MemoryModelProps } from './memory/model';
+import { MemoryModel } from './memory';
+import { MemoryModelProps } from './memory/types';
 
 export interface SimpleSlideData {
 	title: string;
@@ -52,33 +53,45 @@ export const stages: Stage[] = [
 		id: 'memory_test',
 		stage_duration: 3,
 		component: (substage_index: number) => {
-			const data: MemoryModelProps = (
-				[
-					{
-						start_address: 0,
-						end_address: 20,
-						config: {},
-						values: [
-							{
-								type: 'int',
-								start_address: 3,
-								value: 5
-							},
-							{
-								type: 'string',
-								start_address: 9,
-								value: 'Hello'
-							},
-							{
-								type: 'null',
-								start_address: 15,
-								end_address: 20
-							}
-						]
-					}
-				] satisfies MemoryModelProps[]
-			)[0];
-			return <MemoryModel {...data} />;
+			const data: MemoryModelProps[] = [
+				{
+					rendered_span: {
+						start: 0,
+						end: 20
+					},
+					visual_span: {
+						start: 0,
+						end: 20
+					},
+					config: {
+						hide_addresses: false,
+						hide_arrows: false,
+						mark_overlapping_values: true
+					},
+					values: [
+						{
+							type: 'int',
+							start_address: 3,
+							value: 5
+						},
+						{
+							type: 'string',
+							start_address: 9,
+							value: 'Hello'
+						},
+						{
+							type: 'null',
+							start_address: 15,
+							end_address: 20
+						}
+					]
+				}
+			];
+			return (
+				<div className="w-64 h-full">
+					<MemoryModel {...data[0]} />
+				</div>
+			);
 		}
 	}
 ];
