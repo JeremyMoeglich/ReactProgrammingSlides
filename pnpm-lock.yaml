@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@react-spring/web': ^9.6.1
   '@types/d3': ^7.4.0
+  '@types/lodash-es': ^4.17.6
   '@types/react': ^18.0.28
   '@types/react-dom': ^18.0.11
   '@vitejs/plugin-react': ^3.1.0
@@ -10,6 +11,7 @@ specifiers:
   d3: ^7.8.2
   functional-utilities: ^1.20.0
   keyboard-event-key-type: ^1.5.0
+  lodash-es: ^4.17.21
   postcss: ^8.4.21
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -20,9 +22,11 @@ specifiers:
 
 dependencies:
   '@react-spring/web': 9.6.1_biqbaboplfbrettd7655fr4n2y
+  '@types/lodash-es': 4.17.6
   d3: 7.8.2
   functional-utilities: 1.20.0
   keyboard-event-key-type: 1.5.0
+  lodash-es: 4.17.21
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-full-screen: 1.1.1_react@18.2.0
@@ -760,6 +764,16 @@ packages:
   /@types/geojson/7946.0.10:
     resolution: {integrity: sha512-Nmh0K3iWQJzniTuPRcJn5hxXkfB1T1pgB89SBig5PlJQU5yocazeu4jATJlaA0GYFKWMqDdvYemoSnF2pXgLVA==}
     dev: true
+
+  /@types/lodash-es/4.17.6:
+    resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
+    dependencies:
+      '@types/lodash': 4.14.191
+    dev: false
+
+  /@types/lodash/4.14.191:
+    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
+    dev: false
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}

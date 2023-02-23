@@ -55,7 +55,7 @@ export function AnimatedBlock(props: { visual_span: MemorySpan; look: MemoryCell
 					position: 'absolute',
 					width: '100%',
 					padding: `${props.look.margin}px`,
-					opacity: "0.5"
+					opacity: props.look.opacity
 				}}
 			>
 				<animated.div

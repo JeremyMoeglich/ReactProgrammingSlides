@@ -1,6 +1,7 @@
 import { range } from 'functional-utilities';
 import { MemoryModelProps, MemorySpan, MemoryValue } from './types';
-import { datatypes, get_color, get_size } from './datatypes';
+import { colors, datatypes, get_color, get_size } from './datatypes';
+import { cloneDeep } from 'lodash-es';
 
 export interface MemoryCellLook {
 	// Describes the look of a single memory block
@@ -13,9 +14,9 @@ export interface MemoryCellLook {
 	horizontal_border: string;
 	side_text: string;
 	margin: number;
+	opacity: number;
 }
 
-const empty_color = '#f6f6f6';
 const empty_border = '#000000';
 
 function address_to_span(address: number): MemorySpan {
@@ -25,19 +26,90 @@ function address_to_span(address: number): MemorySpan {
 	};
 }
 
+function pairs<T>(arr: T[]): [T, T][] {
+	const pairs: [T, T][] = [];
+	for (let i = 0; i < arr.length - 1; i++) {
+		pairs.push([arr[i], arr[i + 1]]);
+	}
+	return pairs;
+}
+
+function span_overlap(a: MemorySpan, b: MemorySpan): MemorySpan | undefined {
+	if (a.end <= b.start || b.end <= a.start) {
+		return undefined;
+	}
+	return {
+		start: Math.max(a.start, b.start),
+		end: Math.min(a.end, b.end)
+	};
+}
+
+function get_value_span(value: MemoryValue): MemorySpan {
+	return {
+		start: value.start_address,
+		end: value.start_address + get_size(value)
+	};
+}
+
+function sort_spans(spans: MemorySpan[]): MemorySpan[] {
+	return cloneDeep(spans).sort((a, b) => a.start - b.start);
+}
+
+function simplify_spans(spans: MemorySpan[]): MemorySpan[] {
+	const sorted_spans = sort_spans(spans);
+	const simplified_spans: MemorySpan[] = [];
+	for (const span of sorted_spans) {
+		if (simplified_spans.length === 0) {
+			simplified_spans.push(span);
+			continue;
+		}
+		const last_span = simplified_spans[simplified_spans.length - 1];
+		const overlap = span_overlap(last_span, span);
+		if (overlap === undefined) {
+			simplified_spans.push(span);
+			continue;
+		}
+		last_span.end = span.end;
+	}
+	return simplified_spans;
+}
+
+function calculate_overlap_spans(
+	props: MemoryModelProps,
+): MemorySpan[] {
+	const sorted_spans = cloneDeep(props.values).sort((a, b) => a.start_address - b.start_address);
+	const overlap_spans: MemorySpan[] = pairs(sorted_spans).flatMap(([a, b]) => {
+		const overlap = span_overlap(
+			get_value_span(a),
+			get_value_span(b)
+		);
+		if (overlap === undefined) {
+			return [];
+		}
+		return [{
+			start: overlap.start,
+			end: overlap.end
+		}]
+	});
+	return simplify_spans(overlap_spans);
+}
+
+
+
 export function calculate_single_cells(props: MemoryModelProps): MemoryCellLook[] {
 	const single_cells: MemoryCellLook[] = range(
 		props.rendered_span.start,
 		props.rendered_span.end
 	).map((address) => ({
 		span: address_to_span(address),
-		color: empty_color,
+		color: colors.empty,
 		claimed: false,
 		text: '',
 		vertical_border: empty_border,
 		horizontal_border: empty_border,
 		side_text: '',
-		margin: 3
+		margin: 3,
+		opacity: 1
 	}));
 	for (const value of props.values) {
 		const size = get_size(value);
@@ -62,7 +134,8 @@ export function calculate_single_cells(props: MemoryModelProps): MemoryCellLook[
 				vertical_border: get_color(value.type).subcell_edge_color,
 				horizontal_border: get_color(value.type).subcell_edge_color,
 				side_text: render_address(value.start_address + i),
-				margin: 10
+				margin: 10,
+				opacity: 1
 			};
 		}
 	}
@@ -86,9 +159,20 @@ export function calculate_outer_cells(props: MemoryModelProps): MemoryCellLook[]
 			vertical_border: datatype.subcell_edge_color,
 			horizontal_border: datatype.subcell_edge_color,
 			side_text: render_address(value.start_address),
-			margin: 3
+			margin: 3,
+			opacity: 0.5
 		};
-	});
+	}).concat(calculate_overlap_spans(props).map((span) => ({
+		span,
+		color: colors.overlap,
+		claimed: true,
+		text: '',
+		vertical_border: '#000000',
+		horizontal_border: '#000000',
+		side_text: '',
+		margin: 0,
+		opacity: 0.5
+	})));
 }
 
 function get_outer_text(value: MemoryValue): string {

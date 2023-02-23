@@ -59,7 +59,7 @@ export const colors = {
         );
         return typed_from_entries(new_entries);
     })(),
-    overlap: '#ffdddd',
+    overlap: '#ff0000',
     empty: '#f6f6f6',
     default_border: '#000000'
 } satisfies Record<DataType | 'overlap' | 'empty' | 'default_border', string>;
