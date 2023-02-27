@@ -1,4 +1,4 @@
-import { SimpleSlideData, TitleSlideData } from './content';
+import { SimpleSlideData, TitleSlideData } from "./stage_types";
 
 export const DefaultSlide = (props: SimpleSlideData) => {
 	return (

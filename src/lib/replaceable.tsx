@@ -10,7 +10,6 @@ interface ReplaceableProps<Props> {
 
 // This is a component replaces the existing component by moving it out of the screen
 // and moving in the new component. This is done by using the react-spring
-
 export const Replaceable = <Props extends {}>(props: ReplaceableProps<Props>) => {
 	const springs = useSprings(2, [
 		{

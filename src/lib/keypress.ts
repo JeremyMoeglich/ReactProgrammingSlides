@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { KeyboardEventKey } from "keyboard-event-key-type";
+
 export function useListenKey(targetKey: KeyboardEventKey, callback: () => void) {
     useEffect(() => {
         const handler = ({ key }: { key: string }) => {
@@ -11,6 +12,5 @@ export function useListenKey(targetKey: KeyboardEventKey, callback: () => void) 
         return () => {
             window.removeEventListener("keydown", handler);
         };
-    }
-        , []);
+    }, []);
 }

@@ -32,6 +32,18 @@ export const datatypes = {
         color: '#ddffdd',
         edge_color: '#ccffcc',
         subcell_edge_color: '#bbffbb'
+    },
+    float: {
+        size: (_) => 8, // 64 bits
+        color: '#ffdddd',
+        edge_color: '#ffcccc',
+        subcell_edge_color: '#ffbbbb'
+    },
+    boolean: {
+        size: (_) => 1, // 1 byte
+        color: '#ffffdd',
+        edge_color: '#ffffcc',
+        subcell_edge_color: '#ffffbb'
     }
 } satisfies Record<string, DataTypesRecordValue>;
 
@@ -47,6 +59,10 @@ export function get_size(value: MemoryValue): number {
             return datatypes.pointer.size(value.value);
         case 'string':
             return datatypes.string.size(value.value);
+        case 'float':
+            return datatypes.float.size(value.value);
+        case 'boolean':
+            return datatypes.boolean.size(value.value);
     }
 }
 

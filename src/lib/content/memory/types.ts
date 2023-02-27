@@ -39,4 +39,12 @@ export type MemoryValue = {
             type: 'null';
             end_address: number;
         }
+        | {
+            type: 'float';
+            value: number;
+        }
+        | {
+            type: 'boolean';
+            value: boolean;
+        }
     );

@@ -39,10 +39,10 @@ function App() {
 		}
 	};
 	const next_slide = () => {
-		setSlideIndex((prev_index) => prev_index + 1)
+		setSlideIndex((prev_index) => prev_index + 1);
 	};
 	const prev_slide = () => {
-		setSlideIndex((prev_index) => prev_index - 1)
+		setSlideIndex((prev_index) => prev_index - 1);
 	};
 	const slides = get_slides();
 	useListenKey('ArrowRight', next_slide);
@@ -54,9 +54,9 @@ function App() {
 	return (
 		<div className="App">
 			<p>
-				{slide_index} / {slides.length}
+				{slide_index + 1} / {slides.length}
 			</p>
-			<div className="slide grow relative w-full">{slide.component(slide.props)}</div>
+			<div className="slide grow relative w-full">{slide.component()}</div>
 		</div>
 	);
 }

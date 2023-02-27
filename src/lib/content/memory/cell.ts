@@ -15,6 +15,7 @@ export interface MemoryCellLook {
 	side_text: string;
 	margin: number;
 	opacity: number;
+	id: string;
 }
 
 const empty_border = '#000000';
@@ -97,7 +98,7 @@ function calculate_overlap_spans(
 
 
 export function calculate_single_cells(props: MemoryModelProps): MemoryCellLook[] {
-	const single_cells: MemoryCellLook[] = range(
+	const base_cells: MemoryCellLook[] = range(
 		props.rendered_span.start,
 		props.rendered_span.end
 	).map((address) => ({
@@ -107,39 +108,44 @@ export function calculate_single_cells(props: MemoryModelProps): MemoryCellLook[
 		text: '',
 		vertical_border: empty_border,
 		horizontal_border: empty_border,
-		side_text: '',
+		side_text: render_address(address),
 		margin: 3,
-		opacity: 1
+		opacity: 1,
+		id: `base_cell-${address}`
 	}));
+
 	for (const value of props.values) {
 		const size = get_size(value);
 
 		for (let i = 0; i < size; i++) {
-			single_cells[i + value.start_address] = {
-				span: address_to_span(value.start_address + i),
-				color: get_color(value.type).color,
-				claimed: true,
-				text: (() => {
-					switch (value.type) {
-						case 'int':
-							return '';
-						case 'string':
-							return value.value[i];
-						case 'pointer':
-							return '';
-						case 'null':
-							return '';
-					}
-				})(),
-				vertical_border: get_color(value.type).subcell_edge_color,
-				horizontal_border: get_color(value.type).subcell_edge_color,
-				side_text: render_address(value.start_address + i),
-				margin: 10,
-				opacity: 1
-			};
+			const index = value.start_address + i;
+			const base_cell_ref = base_cells[index];
+			base_cell_ref.color = get_color(value.type).color;
+			base_cell_ref.claimed = true;
+			base_cell_ref.text = (() => {
+				switch (value.type) {
+					case 'int':
+						return '';
+					case 'string':
+						return value.value[i];
+					case 'pointer':
+						return '';
+					case 'null':
+						return '';
+					case 'float':
+						return '';
+					case 'boolean':
+						return '';
+				}
+			})();
+			const edge_color = get_color(value.type).subcell_edge_color;
+			base_cell_ref.vertical_border = edge_color;
+			base_cell_ref.horizontal_border = edge_color;
+			base_cell_ref.margin = 10;
+
 		}
 	}
-	return single_cells;
+	return base_cells;
 }
 
 export function calculate_outer_cells(props: MemoryModelProps): MemoryCellLook[] {
@@ -158,9 +164,10 @@ export function calculate_outer_cells(props: MemoryModelProps): MemoryCellLook[]
 			text: get_outer_text(value),
 			vertical_border: datatype.subcell_edge_color,
 			horizontal_border: datatype.subcell_edge_color,
-			side_text: render_address(value.start_address),
+			side_text: '',
 			margin: 3,
-			opacity: 0.5
+			opacity: 0.5,
+			id: `outer-${value.start_address}-${value.start_address + size}`
 		};
 	}).concat(calculate_overlap_spans(props).map((span) => ({
 		span,
@@ -171,7 +178,8 @@ export function calculate_outer_cells(props: MemoryModelProps): MemoryCellLook[]
 		horizontal_border: '#000000',
 		side_text: '',
 		margin: 0,
-		opacity: 0.5
+		opacity: 0.5,
+		id: `overlap-${span.start}-${span.end}`
 	})));
 }
 
@@ -182,9 +190,13 @@ function get_outer_text(value: MemoryValue): string {
 		case 'string':
 			return ''; // Strings are rendered in the single cells
 		case 'pointer':
-			return render_address(value.value);
+			return `-> ${render_address(value.value)}`
 		case 'null':
 			return 'null';
+		case 'float':
+			return value.value.toString();
+		case 'boolean':
+			return value.value ? 'true' : 'false';
 	}
 }
 
